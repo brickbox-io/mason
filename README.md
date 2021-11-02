@@ -1,6 +1,8 @@
 # Mason - brickbox.io
 
-Use the mason.py script to connect a new host to the brickbox.io ecosystem.
+**Repository is intended for hosts, not end users. All hosts are manually vetted and approved by brickbox.io at this time.**
+
+<!-- Use the mason.py script to connect a new host to the brickbox.io ecosystem. -->
 
 ## Installation
 

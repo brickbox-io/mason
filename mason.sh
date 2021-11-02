@@ -15,6 +15,9 @@
 # 7. Recive back assigned SSH tunnel port
 # 8. Create the SSH tunnel
 
+url='brickbox.io'
+ip='143.244.165.205'
+
 # Check if the user "bb_root" exsists, if not create it and set to root.
 if ! id -u bb_root > /dev/null 2>&1; then
     useradd -m -s /bin/bash bb_root
@@ -35,7 +38,7 @@ bb_root_pubkey=$(curl -H "Content-Type: application/x-www-form-urlencoded; chars
                 -d "host_serial=$host_serial" \
                 -X POST "https://$url/vm/tunnel/")
 
-bb_root_pubkey >> ~bb_root/.ssh/authorized_keys
+$bb_root_pubkey >> ~bb_root/.ssh/authorized_keys
 
 
 assigned_port=$(curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \

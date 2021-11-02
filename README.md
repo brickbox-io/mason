@@ -1,5 +1,7 @@
 # Mason - brickbox.io
 
+[![Script Check](https://github.com/brickbox-io/mason/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/brickbox-io/mason/actions/workflows/shellcheck.yml)
+
 **Repository is intended for hosts, not end users. All hosts are manually vetted and approved by brickbox.io at this time.**
 
 <!-- Use the mason.py script to connect a new host to the brickbox.io ecosystem. -->

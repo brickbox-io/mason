@@ -134,5 +134,5 @@ WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
-systemctl enable sshtunnel
-systemctl start sshtunnel
+systemctl enable sshtunnel.service
+systemctl start sshtunnel.service

@@ -132,3 +132,7 @@ RestartSec=60
 [Install]
 WantedBy=multi-user.target
 EOF
+
+systemctl daemon-reload
+systemctl enable sshtunnel
+systemctl start sshtunnel

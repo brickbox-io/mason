@@ -24,3 +24,8 @@ sudo wget -qO - mason.brickbox.io | bash -s [API Key]
 --output-document=file
     The documents will not be written to the appropriate files, but all will be concatenated together and written to file.
     If ‘-’ is used as file, documents will be printed to standard output, disabling link conversion.
+
+## Arguments
+| Argumen | Description |
+|---------|-------------|
+| -d      | Debug Flag  |

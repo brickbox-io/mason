@@ -64,8 +64,10 @@ host_serial=$(dmidecode -s system-serial-number)
 # Confirm the host serial number and access before proceeding.
 onboarding_init=$(curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
                     -X POST "https://$url$onboarding_endpoint$host_serial/" )
+http_code=$(tail -n1 <<< "$onboarding_init")
+
 # Check for 200 response before proceeding.
-if [ $onboarding_init -eq 200 ]; then
+if [ $http_code -eq 200 ]; then
     bb_root_pubkey=$(curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
                     -d "host_serial=$host_serial" \
                     -X POST "https://$url/vm/tunnel/")

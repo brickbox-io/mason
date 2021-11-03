@@ -66,10 +66,10 @@ onboarding_init=$(curl -H "Content-Type: application/x-www-form-urlencoded; char
                     -X POST "https://$url$onboarding_endpoint$host_serial/" )
 http_code=$(tail -n1 <<< "$onboarding_init")
 
-echo "Onboarding init: $onboarding_init"
+echo "Onboarding init: $http_code"
 
 # Check for 200 response before proceeding.
-if [ $http_code -eq "200" ]; then
+if [[ $http_code == "200" ]]; then
     bb_root_pubkey=$(curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
                     -d "host_serial=$host_serial" \
                     -X POST "https://$url/vm/tunnel/")

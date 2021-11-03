@@ -2,9 +2,6 @@
 
 # First script to run on a new host to setup the connection to the server.
 
-# Inputs:
-# - $1: API Key
-
 # --------------------------------- Processes -------------------------------- #
 # 1. Create "bb_root" user
 # 2. Create "/etc/sshtunnel" directory
@@ -15,8 +12,29 @@
 # 7. Recive back assigned SSH tunnel port
 # 8. Create the SSH tunnel
 
-url='brickbox.io'
-ip='143.244.165.205'
+# Arguments:
+api_key=$1
+
+# Flags
+DEBUG=0
+
+white getopts ":d" flags; do
+  case "${flags}" in
+    d) DEBUG=1 ;;
+    \?) echo "Invalid option: -${OPTARG}" >&2;
+    exit 1 ;;
+  esac
+done
+
+if [ $DEBUG -eq 1 ]; then
+    url='dev.brickbox.io'
+    ip='134.209.214.111'
+elif [ $DEBUG -eq 0 ]; then
+    url='brickbox.io'
+    ip='143.244.165.205'
+fi
+
+
 
 onboarding_endpoint='/vm/host/onboarding/'
 onboarding_pubkey_endpoint='/vm/host/onboarding/pubkey/'

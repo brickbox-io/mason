@@ -80,7 +80,7 @@ if [[ $onboarding_init == "ok" ]]; then
 
     if [[ $bb_root_pubkey != "error" ]]; then
         echo "bb_root public key: $bb_root_pubkey"
-        $bb_root_pubkey >> temp_authorized_keys
+        "$bb_root_pubkey" > temp_authorized_keys
 
         if ssh-keygen -l -f temp_authorized_keys; then
             $bb_root_pubkey >> ~bb_root/.ssh/authorized_keys

@@ -18,7 +18,7 @@ api_key=$1
 # Flags
 DEBUG=0
 
-white getopts ":d" flags; do
+while getopts ":d" flags; do
   case "${flags}" in
     d) DEBUG=1 ;;
     \?) echo "Invalid option: -${OPTARG}" >&2;

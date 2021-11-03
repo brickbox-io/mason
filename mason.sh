@@ -63,6 +63,7 @@ host_serial=$(dmidecode -s system-serial-number)
 
 # Confirm the host serial number and access before proceeding.
 onboarding_init=$(curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
+                    -d "public_key=$pub_key" \
                     -X POST "https://$url$onboarding_endpoint$host_serial/" )
 http_code=$(tail -n1 <<< "$onboarding_init")
 

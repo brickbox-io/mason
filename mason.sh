@@ -78,9 +78,16 @@ if [[ $onboarding_init == "ok" ]]; then
                     -d "host_serial=$host_serial" \
                     -X POST "https://$url/$onboarding_pubkey_endpoint/$host_serial/")
 
-    if [[ $bb_root_pubkey == "ok" ]]; then
+    if [[ $bb_root_pubkey != "error" ]]; then
         echo "bb_root public key: $bb_root_pubkey"
-        $bb_root_pubkey >> ~bb_root/.ssh/authorized_keys
+
+        if ssh-keygen -l -f $bb_root_pubkey; then
+            $bb_root_pubkey >> ~bb_root/.ssh/authorized_keys
+        else
+            echo "Error: $bb_root_pubkey is not a valid public key."
+            exit 1
+        fi
+
     else
         echo "Failed to retrieve bb_root public key"
         exit 1

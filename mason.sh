@@ -97,16 +97,18 @@ if [[ $onboarding_init == "ok" ]]; then
     fi
 
     assigned_port=$(curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
-                    --data-urlencode "pub_key=$pub_key" \
-                    -d "host_serial=$host_serial" \
-                    -X POST "https://$url/vm/tunnel/")
+                    -X POST "https://$url/$onboarding_sshport_endpoint/$host_serial/")
+    if [[ $assigned_port != "error" ]]; then
+        echo "Assigned SSH tunnel port: $assigned_port"
+    else
+        echo "Failed to retrieve assigned SSH tunnel port"
+        exit 1
+    fi
 
 else
     echo "Failed to onboard host."
     exit 1
 fi
-
-
 
 cat <<EOF > /etc/systemd/system/sshtunnel.service
 [Unit]

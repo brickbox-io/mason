@@ -133,6 +133,5 @@ RestartSec=60
 WantedBy=multi-user.target
 EOF
 
+systemctl enable --now sshtunnel
 systemctl daemon-reload
-systemctl enable sshtunnel
-systemctl start sshtunnel

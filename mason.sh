@@ -18,6 +18,10 @@
 url='brickbox.io'
 ip='143.244.165.205'
 
+onboarding_endpoint='/vm/host/onboarding/'
+onboarding_pubkey_endpoint='/vm/host/onboarding/pubkey/'
+onboarding_sshport_endpoint='/vm/host/onboarding/sshport/'
+
 # Check if the user "bb_root" exsists, if not create it and set to root.
 if ! id -u bb_root > /dev/null 2>&1; then
     useradd -m -s /bin/bash bb_root

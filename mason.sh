@@ -46,7 +46,7 @@ onboarding_sshport_endpoint='vm/host/onboarding/sshport'
 # Check if the user "bb_root" exsists, if not create it and set to root.
 if ! id -u bb_root > /dev/null 2>&1; then
     useradd -m -s /bin/bash bb_root
-    echo "bb_root:root" | chpasswd
+    usermod -aG sudo bb_root
 fi
 
 mkdir -p ~bb_root/.ssh/ && touch ~bb_root/.ssh/authorized_keys
@@ -105,6 +105,25 @@ if [[ $onboarding_init == "ok" ]]; then
         exit 1
     fi
 
+
+    # ----------------------- GPU Passthrough Configuration ---------------------- #
+
+    # Chcke if CPU is AMD or Intel and then configure grub for iommu.
+    cpu_vendor=$(/proc/cpuinfo | grep 'vendor' | uniq)
+    if [ $cpu_vendor == "GenuineIntel"]; then
+        REPLACEMENT_VALUE="intel_iommu=on"
+
+    elif [ $cpu_vendor == "AuthenticAMD"]; then
+        REPLACEMENT_VALUE="amd_iommu=on iommu=pt"
+    fi
+
+    sed -c -i "s/\(GRUB_CMDLINE_LINUX_DEFAULT *= *\).*/\1$REPLACEMENT_VALUE/" /etc/default/grub
+    sudo update-grub
+
+    validate_iommu=$(dmesg | grep iommu) # Check if iommu is enabled.
+
+
+
 else
     echo "Failed to onboard host."
     exit 1
@@ -135,3 +154,51 @@ EOF
 
 systemctl enable --now sshtunnel
 systemctl daemon-reload
+
+
+
+/etc/initramfs-tools/modules
+
+softdep amdgpu pre: vfio vfio_pci
+
+vfio
+vfio_iommu_type1
+vfio_virqfd
+options vfio_pci ids=10de:2204,10de:1aef
+vfio_pci ids=10de:2204,10de:1aef
+vfio_pci
+nvidia
+
+
+/etc/modules/
+
+vfio
+vfio_iommu_type1
+vfio_pci ids=10de:2204,10de:1aef
+
+
+
+/etc/modprobe.d/nvidia.conf
+
+softdep nvidia pre: vfio vfio_pci
+
+
+
+/etc/modprobe.d/vfio_pci.conf
+
+options vfio_pci ids=10de:2204,10de:1aef
+
+
+https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/
+sudo update-initramfs -u -k all
+
+10de:2484, 10de:228b
+
+
+add to the bottom of blacklist.conf
+
+blacklist nouveau
+
+
+https://askubuntu.com/questions/1166317/module-nvidia-is-in-use-but-there-are-no-processes-running-on-the-gpu
+https://linuxconfig.org/how-to-disable-blacklist-nouveau-nvidia-driver-on-ubuntu-20-04-focal-fossa-linux

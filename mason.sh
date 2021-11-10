@@ -43,43 +43,43 @@ onboarding_pubkey_endpoint='vm/host/onboarding/pubkey'
 onboarding_sshport_endpoint='vm/host/onboarding/sshport'
 
 
-# Check if the user "bb_root" exsists, if not create it and set to root.
+# ---------------------------------- bb_root --------------------------------- #
 if ! id -u bb_root > /dev/null 2>&1; then
     useradd -m -s /bin/bash bb_root
     usermod -aG sudo bb_root
+    mkdir -p ~bb_root/.ssh/ && touch ~bb_root/.ssh/authorized_keys
+elif
+    mkdir -p ~bb_root/.ssh/ && touch ~bb_root/.ssh/authorized_keys
 fi
 
-mkdir -p ~bb_root/.ssh/ && touch ~bb_root/.ssh/authorized_keys
 
-# Create "/etc/sshtunnel" directory
+# -------------------------------- SSH Tunnel -------------------------------- #
 mkdir -p /etc/sshtunnel
-
-# Generate sshtunnel key pair if it does not exist
 if [ ! -f /etc/sshtunnel/id_rsa ]; then
     ssh-keygen -qN "" -f /etc/sshtunnel/id_rsa
 fi
 pub_key=$(cat /etc/sshtunnel/id_rsa.pub)
 
-# Read the host serial number
+
+# ------------------------------- Serial Number ------------------------------ #
 host_serial=$(dmidecode -s system-serial-number)
 
-# Confirm the host serial number and access before proceeding.
 onboarding_init=$(curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
                     --data-urlencode "public_key=$pub_key" \
                     -X POST "https://$url/$onboarding_endpoint/$host_serial/" )
-http_code=$(tail -n1 <<< "$onboarding_init")
-
-echo "Onboarding init: $onboarding_init"
 
 
-if [[ $onboarding_init == "ok" ]]; then
+# ---------------------------------------------------------------------------- #
+#                              System Modification                             #
+# ---------------------------------------------------------------------------- #
+if [[ "$onboarding_init" == "ok" ]]; then
 
+    # ------------------------------ bb_root PubKey ------------------------------ #
     bb_root_pubkey=$(curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
                     -d "host_serial=$host_serial" \
                     -X POST "https://$url/$onboarding_pubkey_endpoint/$host_serial/")
 
-    if [[ $bb_root_pubkey != "error" ]]; then
-        echo "bb_root public key: $bb_root_pubkey"
+    if [[ "$bb_root_pubkey" != "error" ]]; then
         echo "$bb_root_pubkey" > temp_authorized_keys
 
         if ssh-keygen -l -f temp_authorized_keys; then
@@ -96,6 +96,62 @@ if [[ $onboarding_init == "ok" ]]; then
         exit 1
     fi
 
+
+    # ----------------------- GPU Passthrough Configuration ---------------------- #
+
+    # IOMMU
+    cpu_vendor=$(/proc/cpuinfo | grep 'vendor' | uniq)
+    if [ $cpu_vendor == "GenuineIntel"]; then
+        REPLACEMENT_VALUE="intel_iommu=on"
+    elif [ $cpu_vendor == "AuthenticAMD"]; then
+        REPLACEMENT_VALUE="amd_iommu=on iommu=pt"
+    fi
+
+    sed -c -i "s/\(GRUB_CMDLINE_LINUX_DEFAULT *= *\).*/\1$REPLACEMENT_VALUE/" /etc/default/grub
+    sudo update-grub
+
+    validate_iommu=$(dmesg | grep iommu) # Check if iommu is enabled. (Might not be working)
+
+    # initramfs-tools
+    if [[ ! $(cat /etc/initramfs-tools/modules | grep "vfio") ]]; then
+        echo "softdep amdgpu pre: vfio vfio_pci" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
+        echo "vfio" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
+        echo "vfio_iommu_type1" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
+        echo "vfio_virqfd" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
+        echo "options vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
+        echo "vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
+        echo "vfio_pci" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
+        echo "nvidia" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
+    fi
+
+    # Modules
+    if [[ ! $(cat /etc/modules | grep "vfio") ]]; then
+        echo "vfio" | sudo tee -a /etc/modules > /dev/null
+        echo "vfio_iommu_type1" | sudo tee -a /etc/modules > /dev/null
+        echo "vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/modules > /dev/null
+    fi
+
+    # Nvidia Config
+    if [ ! -f /etc/modprobe.d/nvidia.conf ]; then
+        touch /etc/modprobe.d/nvidia.conf
+        echo "softdep nvidia pre: vfio vfio_pci" | sudo tee -a /etc/modprobe.d/nvidia.conf > /dev/null
+    fi
+
+    # Modprobe VFIO
+     if [ ! -f /etc/modprobe.d/vfio_pci.conf ]; then
+        touch /etc/modprobe.d/vfio_pci.conf
+        echo "options vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/modprobe.d/nvidia.conf > /dev/null
+    fi
+
+    # Blacklist nouveau
+    if [[ ! $(cat /etc/modprobe/blacklist.conf | grep "nouveau") ]]; then
+        echo "nouveau" | sudo tee -a /etc/modprobe/blacklist.conf > /dev/null
+    fi
+
+    # Commit Changes
+    sudo update-initramfs -u -k all
+
+    # ------------------------------- Assigned Port ------------------------------ #
     assigned_port=$(curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
                     -X POST "https://$url/$onboarding_sshport_endpoint/$host_serial/")
     if [[ $assigned_port != "error" ]]; then
@@ -104,25 +160,6 @@ if [[ $onboarding_init == "ok" ]]; then
         echo "Failed to retrieve assigned SSH tunnel port"
         exit 1
     fi
-
-
-    # ----------------------- GPU Passthrough Configuration ---------------------- #
-
-    # Chcke if CPU is AMD or Intel and then configure grub for iommu.
-    cpu_vendor=$(/proc/cpuinfo | grep 'vendor' | uniq)
-    if [ $cpu_vendor == "GenuineIntel"]; then
-        REPLACEMENT_VALUE="intel_iommu=on"
-
-    elif [ $cpu_vendor == "AuthenticAMD"]; then
-        REPLACEMENT_VALUE="amd_iommu=on iommu=pt"
-    fi
-
-    sed -c -i "s/\(GRUB_CMDLINE_LINUX_DEFAULT *= *\).*/\1$REPLACEMENT_VALUE/" /etc/default/grub
-    sudo update-grub
-
-    validate_iommu=$(dmesg | grep iommu) # Check if iommu is enabled.
-
-
 
 else
     echo "Failed to onboard host."
@@ -154,51 +191,3 @@ EOF
 
 systemctl enable --now sshtunnel
 systemctl daemon-reload
-
-
-
-/etc/initramfs-tools/modules
-
-softdep amdgpu pre: vfio vfio_pci
-
-vfio
-vfio_iommu_type1
-vfio_virqfd
-options vfio_pci ids=10de:2204,10de:1aef
-vfio_pci ids=10de:2204,10de:1aef
-vfio_pci
-nvidia
-
-
-/etc/modules/
-
-vfio
-vfio_iommu_type1
-vfio_pci ids=10de:2204,10de:1aef
-
-
-
-/etc/modprobe.d/nvidia.conf
-
-softdep nvidia pre: vfio vfio_pci
-
-
-
-/etc/modprobe.d/vfio_pci.conf
-
-options vfio_pci ids=10de:2204,10de:1aef
-
-
-https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/
-sudo update-initramfs -u -k all
-
-10de:2484, 10de:228b
-
-
-add to the bottom of blacklist.conf
-
-blacklist nouveau
-
-
-https://askubuntu.com/questions/1166317/module-nvidia-is-in-use-but-there-are-no-processes-running-on-the-gpu
-https://linuxconfig.org/how-to-disable-blacklist-nouveau-nvidia-driver-on-ubuntu-20-04-focal-fossa-linux

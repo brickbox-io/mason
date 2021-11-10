@@ -17,5 +17,5 @@ jobs:
 
       - name: Run Script
         run: |
-        chmod +x ./mason.sh
-        ./mason.sh
+          sudo chmod +x ./mason.sh
+          sudo ./mason.sh

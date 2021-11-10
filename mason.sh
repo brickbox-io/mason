@@ -44,11 +44,11 @@ onboarding_sshport_endpoint='vm/host/onboarding/sshport'
 
 
 # ---------------------------------- bb_root --------------------------------- #
-if ! id -u bb_root > /dev/null 2>&1; then
+if [[ ! $(id -u bb_root > /dev/null 2>&1) ]]; then
     useradd -m -s /bin/bash bb_root
     usermod -aG sudo bb_root
     mkdir -p ~bb_root/.ssh/ && touch ~bb_root/.ssh/authorized_keys
-elif
+else
     mkdir -p ~bb_root/.ssh/ && touch ~bb_root/.ssh/authorized_keys
 fi
 

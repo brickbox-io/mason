@@ -13,7 +13,7 @@
 # 8. Create the SSH tunnel
 
 # Arguments:
-api_key=$1
+# api_key=$1
 
 # Flags
 DEBUG=0
@@ -110,10 +110,10 @@ if [[ "$onboarding_init" == "ok" ]]; then
     sed -c -i "s/\(GRUB_CMDLINE_LINUX_DEFAULT *= *\).*/\1$REPLACEMENT_VALUE/" /etc/default/grub
     sudo update-grub
 
-    validate_iommu=$(dmesg | grep iommu) # Check if iommu is enabled. (Might not be working)
+    # validate_iommu=$(dmesg | grep iommu) # Check if iommu is enabled. (Might not be working)
 
     # initramfs-tools
-    if [[ ! $(grep -q "vfio" /etc/initramfs-tools/modules) ]]; then
+    if ! grep -q "vfio" /etc/initramfs-tools/modules; then
         echo "softdep amdgpu pre: vfio vfio_pci" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
         echo "vfio" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
         echo "vfio_iommu_type1" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
@@ -125,7 +125,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
     fi
 
     # Modules
-    if [[ ! $(grep -a "vfio" /etc/modules) ]]; then
+    if  ! grep -q "vfio" /etc/modules; then
         echo "vfio" | sudo tee -a /etc/modules > /dev/null
         echo "vfio_iommu_type1" | sudo tee -a /etc/modules > /dev/null
         echo "vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/modules > /dev/null
@@ -144,7 +144,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
     fi
 
     # Blacklist nouveau
-    if [[ ! $(cat /etc/modprobe/blacklist.conf | grep "nouveau") ]]; then
+    if ! grep -q "nouveau" /etc/modprobe/blacklist.conf; then
         echo "nouveau" | sudo tee -a /etc/modprobe/blacklist.conf > /dev/null
     fi
 

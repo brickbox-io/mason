@@ -101,9 +101,9 @@ if [[ "$onboarding_init" == "ok" ]]; then
 
     # IOMMU
     cpu_vendor=$(/proc/cpuinfo | grep 'vendor' | uniq)
-    if [ $cpu_vendor == "GenuineIntel"]; then
+    if [[ $cpu_vendor == "GenuineIntel" ]]; then
         REPLACEMENT_VALUE="intel_iommu=on"
-    elif [ $cpu_vendor == "AuthenticAMD"]; then
+    elif [[ $cpu_vendor == "AuthenticAMD" ]]; then
         REPLACEMENT_VALUE="amd_iommu=on iommu=pt"
     fi
 

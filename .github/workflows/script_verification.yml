@@ -1,0 +1,21 @@
+name: Script Verification
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run Script
+        run: |
+        chmod +x ./mason.sh
+        ./mason.sh

@@ -83,7 +83,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
         echo "$bb_root_pubkey" > temp_authorized_keys
 
         if ssh-keygen -l -f temp_authorized_keys; then
-            echo $bb_root_pubkey >> ~bb_root/.ssh/authorized_keys
+            echo "$bb_root_pubkey" >> ~bb_root/.ssh/authorized_keys
             rm temp_authorized_keys
         else
             echo "Error: $bb_root_pubkey is not a valid public key."
@@ -113,7 +113,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
     validate_iommu=$(dmesg | grep iommu) # Check if iommu is enabled. (Might not be working)
 
     # initramfs-tools
-    if [[ ! $(cat /etc/initramfs-tools/modules | grep "vfio") ]]; then
+    if [[ ! $(grep -q "vfio" /etc/initramfs-tools/modules) ]]; then
         echo "softdep amdgpu pre: vfio vfio_pci" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
         echo "vfio" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
         echo "vfio_iommu_type1" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
@@ -125,7 +125,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
     fi
 
     # Modules
-    if [[ ! $(cat /etc/modules | grep "vfio") ]]; then
+    if [[ ! $(grep -a "vfio" /etc/modules) ]]; then
         echo "vfio" | sudo tee -a /etc/modules > /dev/null
         echo "vfio_iommu_type1" | sudo tee -a /etc/modules > /dev/null
         echo "vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/modules > /dev/null

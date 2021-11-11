@@ -16,7 +16,7 @@
 # api_key=$1
 
 # Flags
-DEBUG=0
+DEBUG=0 # -d
 
 # ---------------------------------------------------------------------------- #
 #                                 Configuration                                #
@@ -48,10 +48,11 @@ if [[ ! $(id -u bb_root > /dev/null 2>&1) ]]; then
     useradd -m -s /bin/bash bb_root
     usermod -aG sudo bb_root
     mkdir -p ~bb_root/.ssh/ && touch ~bb_root/.ssh/authorized_keys
+    echo "bb_root    ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers > /dev/null
+
 else
     mkdir -p ~bb_root/.ssh/ && touch ~bb_root/.ssh/authorized_keys
 fi
-
 
 # -------------------------------- SSH Tunnel -------------------------------- #
 mkdir -p /etc/sshtunnel

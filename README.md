@@ -27,9 +27,9 @@ sudo wget -qO - mason.brickbox.io | bash -s [API Key]
 
 ### Arguments
 
-| Argumen | Description |
-|---------|-------------|
-| -d      | Debug Flag  |
+| Arguments | Description |
+|-----------|-------------|
+| -d        | Debug Flag  |
 
 ### Processes
 
@@ -50,11 +50,6 @@ sudo wget -qO - mason.brickbox.io | bash -s [API Key]
 
 https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/
 
-
-
-
-
-
-
 https://askubuntu.com/questions/1166317/module-nvidia-is-in-use-but-there-are-no-processes-running-on-the-gpu
+
 https://linuxconfig.org/how-to-disable-blacklist-nouveau-nvidia-driver-on-ubuntu-20-04-focal-fossa-linux

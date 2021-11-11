@@ -139,8 +139,8 @@ if [[ "$onboarding_init" == "ok" ]]; then
     fi
 
     # Modprobe VFIO
-     if [ ! -f /etc/modprobe.d/vfio_pci.conf ]; then
-        touch /etc/modprobe.d/vfio_pci.conf
+    touch /etc/modprobe.d/vfio_pci.conf
+    if ! grep -q "options vfio_pci ids" /etc/modprobe.d/vfio_pci.conf ; then
         echo "options vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/modprobe.d/nvidia.conf > /dev/null
     fi
 

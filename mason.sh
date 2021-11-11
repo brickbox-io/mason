@@ -145,8 +145,8 @@ if [[ "$onboarding_init" == "ok" ]]; then
     fi
 
     # Blacklist nouveau
-    if ! grep -q "nouveau" /etc/modprobe/blacklist.conf; then
-        echo "nouveau" | sudo tee -a /etc/modprobe/blacklist.conf > /dev/null
+    if ! grep -q "nouveau" /etc/modprobe.d/blacklist.conf; then
+        echo "nouveau" | sudo tee -a /etc/modprobe.d/blacklist.conf > /dev/null
     fi
 
     # Commit Changes

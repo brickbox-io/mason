@@ -72,8 +72,8 @@ if  ! grep -q "bb_root" /etc/ssh/sshd_config; then
     echo "AllowUsers root bb_root brickbox" | sudo tee -a /etc/ssh/sshd_config > /dev/null
 fi
 
-sudo chmod 700 /home/bb_root/.ssh
-sudo chmod 600 /home/bb_root/.ssh/authorized_keys
+sudo chmod 755 /home/bb_root/.ssh
+sudo chmod 644 /home/bb_root/.ssh/authorized_keys
 
 
 # ------------------------------- Serial Number ------------------------------ #

@@ -53,10 +53,6 @@ else
     mkdir -p ~bb_root/.ssh/ && touch ~bb_root/.ssh/authorized_keys
 fi
 
-sudo chmod 700 /home/bb_root/.ssh
-sudo chmod 600 /home/bb_root/.ssh/authorized_keys
-
-
 
 # -------------------------------- SSH Tunnel -------------------------------- #
 mkdir -p /etc/sshtunnel
@@ -69,11 +65,15 @@ pub_key=$(cat /etc/sshtunnel/id_rsa.pub)
 # ----------------------------- SSH Configuration ---------------------------- #
 sudo sed -i '/PermitRootLogin prohibit-password/s/^#//g' /etc/ssh/sshd_config
 sudo sed -i '/AuthorizedKeysFile/s/^#//g' /etc/ssh/sshd_config
+sudo sed -i '/PubkeyAuthentication/s/^#//g' /etc/ssh/sshd_config
 
 if  ! grep -q "bb_root" /etc/ssh/sshd_config; then
     sudo sed -i '/AuthorizedKeysFile/ s|$| /home/bb_root/.ssh/authorized_keys|' /etc/ssh/sshd_config
     echo "AllowUsers root bb_root brickbox" | sudo tee -a /etc/ssh/sshd_config > /dev/null
 fi
+
+sudo chmod 700 /home/bb_root/.ssh
+sudo chmod 600 /home/bb_root/.ssh/authorized_keys
 
 
 # ------------------------------- Serial Number ------------------------------ #

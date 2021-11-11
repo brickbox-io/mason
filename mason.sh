@@ -101,7 +101,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
     # ----------------------- GPU Passthrough Configuration ---------------------- #
 
     # IOMMU
-    cpu_vendor=$(/proc/cpuinfo | grep 'vendor' | uniq)
+    cpu_vendor=$(sudo cat /proc/cpuinfo | grep 'vendor' | uniq | cut -d':' -f2 | xargs)
     if [[ $cpu_vendor == "GenuineIntel" ]]; then
         REPLACEMENT_VALUE="intel_iommu=on"
     elif [[ $cpu_vendor == "AuthenticAMD" ]]; then

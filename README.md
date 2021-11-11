@@ -9,7 +9,7 @@
 The following command will download and run the mason.py file.
 
 ```bash
-sudo wget -qO- mason.brickbox.io | bash -s {option} {arguments}
+sudo wget -qO- mason.brickbox.io | bash /dev/stdin [arguments] [options]
 ```
 
 | Option Flag | Description |

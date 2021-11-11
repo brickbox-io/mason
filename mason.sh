@@ -62,6 +62,16 @@ fi
 pub_key=$(cat /etc/sshtunnel/id_rsa.pub)
 
 
+# ----------------------------- SSH Configuration ---------------------------- #
+sudo sed -i '/PermitRootLogin prohibit-password/s/^#//g' /etc/ssh/sshd_config
+sudo sed -i '/AuthorizedKeysFile/s/^#//g' /etc/ssh/sshd_config
+
+if  ! grep -q "bb_root" /etc/ssh/sshd_config; then
+    sudo sed -i '/AuthorizedKeysFile/ s|$| /home/bb_root/.ssh/authorized_keys|' /etc/ssh/sshd_config
+    echo "AllowUsers root bb_root brickbox" | sudo tee -a /etc/ssh/sshd_config > /dev/null
+fi
+
+
 # ------------------------------- Serial Number ------------------------------ #
 host_serial=$(dmidecode -s system-serial-number)
 

@@ -49,10 +49,14 @@ if [[ ! $(id -u bb_root > /dev/null 2>&1) ]]; then
     usermod -aG sudo bb_root
     mkdir -p ~bb_root/.ssh/ && touch ~bb_root/.ssh/authorized_keys
     echo "bb_root    ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers > /dev/null
-
 else
     mkdir -p ~bb_root/.ssh/ && touch ~bb_root/.ssh/authorized_keys
 fi
+
+sudo chmod 700 /home/bb_root/.ssh
+sudo chmod 600 /home/bb_root/.ssh/authorized_keys
+
+
 
 # -------------------------------- SSH Tunnel -------------------------------- #
 mkdir -p /etc/sshtunnel

@@ -108,7 +108,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
         REPLACEMENT_VALUE="amd_iommu=on iommu=pt"
     fi
 
-    sed -c -i "s/\(GRUB_CMDLINE_LINUX_DEFAULT *= *\).*/\1$REPLACEMENT_VALUE/" /etc/default/grub
+    sudo sed -i "s/\(GRUB_CMDLINE_LINUX_DEFAULT *= *\).*/\1$REPLACEMENT_VALUE/" /etc/default/grub
     sudo update-grub
 
     # validate_iommu=$(dmesg | grep iommu) # Check if iommu is enabled. (Might not be working)

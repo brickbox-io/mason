@@ -147,15 +147,20 @@ if [[ "$onboarding_init" == "ok" ]]; then
     fi
 
     # Nvidia Config
+    touch /etc/modprobe.d/nvidia.conf
     if [ ! -f /etc/modprobe.d/nvidia.conf ]; then
-        touch /etc/modprobe.d/nvidia.conf
         echo "softdep nvidia pre: vfio vfio_pci" | sudo tee -a /etc/modprobe.d/nvidia.conf > /dev/null
     fi
 
     # Modprobe VFIO
     touch /etc/modprobe.d/vfio_pci.conf
     if ! grep -q "options vfio_pci ids" /etc/modprobe.d/vfio_pci.conf ; then
-        echo "options vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/modprobe.d/nvidia.conf > /dev/null
+        echo "options vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/modprobe.d/vfio_pci.conf> /dev/null
+    fi
+
+    touch /etc/modprobe.d/vfio.conf
+    if ! grep -q "options vfio_pci ids" /etc/modprobe.d/vfio.conf ; then
+        echo "options vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/modprobe.d/vfio.conf > /dev/null
     fi
 
     # Blacklist nouveau

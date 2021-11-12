@@ -12,6 +12,8 @@ The following command will download and run the mason.py file.
 sudo wget -qO- mason.brickbox.io | bash /dev/stdin [arguments] [options]
 ```
 
+**ONLY FOR 3090s CURRENTLY**
+
 | Option Flag | Description |
 |-------------|-------------|
 | -d          | Debug Flag  |

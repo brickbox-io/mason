@@ -136,18 +136,18 @@ if [[ "$onboarding_init" == "ok" ]]; then
     # Find GPU
     gpu_name=false
 
-    echo "${supported_gpus_vga[0]}"
+    echo "${!supported_gpus_vga[@]}"
 
     for gpu in "${!supported_gpus_vga[@]}"; do
         echo "$gpu"
-        gpu_count=$(lspci -vnn | grep -q "${supported_gpus_vga[$gpu]}")
+        gpu_count=$(lspci -vnn | grep -q "${supported_gpus_vga[${gpu}]}")
         echo "GPU: $gpu_count"
         if [[ "$gpu_count" -gt 0 ]]; then
             gpu_name=$gpu
             gpu_pci_id=${supported_gpus_vga[$gpu]}
 
             for audio in "${!supported_gpus_audio[@]}"; do
-                gpu_audio_count=$(lspci -vnn | grep -q "${supported_gpus_audio[$audio]}")
+                gpu_audio_count=$(lspci -vnn | grep -q "${supported_gpus_audio[${audio}]}")
                 if [[ "$gpu_audio_count" -gt 0 ]]; then
                     # gpu_audio_name=$audio
                     gpu_audio_pci_id=${supported_gpus_audio[$audio]}

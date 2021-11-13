@@ -26,12 +26,16 @@ DEBUG=0 # -d
 
 declare -A supported_gpus_vga
 
-supported_gpus_vga["Nvidia GeForce RTX 3070 - VGA"]="10de:2484"
-supported_gpus_vga["Nvidia GeForce RTX 3090 - VGA"]="10de:2204"
+# supported_gpus_vga["Nvidia GeForce RTX 3070 - VGA"]="10de:2484"
+# supported_gpus_vga["Nvidia GeForce RTX 3090 - VGA"]="10de:2204"
+supported_gpus_vga["3070"]="10de:2484"
+supported_gpus_vga["3090"]="10de:2204"
 
 declare -A supported_gpus_audio
-supported_gpus_audio["Nvidia GeForce RTX 3070 - Audio"]="10de:228b"
-supported_gpus_audio["Nvidia GeForce RTX 3090 - Audio"]="10de:1aef"
+# supported_gpus_audio["Nvidia GeForce RTX 3070 - Audio"]="10de:228b"
+# supported_gpus_audio["Nvidia GeForce RTX 3090 - Audio"]="10de:1aef"
+supported_gpus_audio["3070_audio"]="10de:228b"
+supported_gpus_audio["3090_audio"]="10de:1aef"
 
 # ---------------------------------------------------------------------------- #
 #                                 Configuration                                #

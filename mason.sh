@@ -140,8 +140,9 @@ if [[ "$onboarding_init" == "ok" ]]; then
 
     for gpu in "${!supported_gpus_vga[@]}"; do
         echo "$gpu"
+        echo "${supported_gpus_vga[$gpu]}"
         gpu_count="$(lspci -vnn | grep -q ${supported_gpus_vga[${gpu}]})"
-        echo "GPU: $gpu_count"
+        echo "GPU Count: $gpu_count"
         if [[ "$gpu_count" -gt 0 ]]; then
             gpu_name=$gpu
             gpu_pci_id=${supported_gpus_vga[$gpu]}

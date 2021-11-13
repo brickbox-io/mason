@@ -167,7 +167,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
     fi
 
     #Register GPUs
-    lspci -vnn | grep -c "$gpu_pci_id" | while read -r gpu_result ; do
+    lspci -vnn | grep "$gpu_pci_id" | while read -r gpu_result ; do
         echo "location: ${gpu_result:0:2}"
     done
 

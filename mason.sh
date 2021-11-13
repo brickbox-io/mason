@@ -151,7 +151,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
         fi
     done
 
-    if [ "$gpu_name" == "false" ]; then
+    if [[ "$gpu_name" == "false" ]]; then
         echo "No supported GPU found."
         exit 1
     fi

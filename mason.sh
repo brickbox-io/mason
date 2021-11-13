@@ -19,6 +19,21 @@
 DEBUG=0 # -d
 
 # ---------------------------------------------------------------------------- #
+#                               GPU Fingerprints                               #
+# ---------------------------------------------------------------------------- #
+
+# A lsit of the supported GPUs and their PCI IDs
+
+declare -A supported_gpus_vga
+
+supported_gpus_vga["Nvidia GeForce RTX 3070 - VGA"]="10de:2484"
+supported_gpus_vga["Nvidia GeForce RTX 3090 - VGA"]="10de:2204"
+
+declare -A supported_gpus_audio
+supported_gpus_audio["Nvidia GeForce RTX 3070 - Audio"]="10de:228b"
+supported_gpus_audio["Nvidia GeForce RTX 3090 - Audio"]="10de:1aef"
+
+# ---------------------------------------------------------------------------- #
 #                                 Configuration                                #
 # ---------------------------------------------------------------------------- #
 
@@ -114,6 +129,33 @@ if [[ "$onboarding_init" == "ok" ]]; then
 
     # ----------------------- GPU Passthrough Configuration ---------------------- #
 
+    # Find GPU
+    gpu_name=false
+
+    for gpu in "${!supported_gpus_vga[@]}"; do
+        gpu_count=$(lspci -vnn | grep -q "${supported_gpus_vga[$gpu]}")
+        if [ "$gpu_count" -gt 0 ]; then
+            gpu_name=$gpu
+            gpu_pci_id=${supported_gpus_vga[$gpu]}
+
+            for audio in "${!supported_gpus_audio[@]}"; do
+                gpu_audio_count=$(lspci -vnn | grep -q "${supported_gpus_audio[$gpu]}")
+                if [ "$gpu_audio_count" -gt 0 ]; then
+                    gpu_audio_name=$audio
+                    gpu_audio_pci_id=${supported_gpus_audio[$gpu]}
+                    break
+                fi
+            done
+
+            break
+        fi
+    done
+
+    if [ "$gpu_name" == "false" ]; then
+        echo "No supported GPU found."
+        exit 1
+    fi
+
     # IOMMU
     cpu_vendor=$(sudo cat /proc/cpuinfo | grep 'vendor' | uniq | cut -d':' -f2 | xargs)
     if [[ $cpu_vendor == "GenuineIntel" ]]; then
@@ -133,8 +175,8 @@ if [[ "$onboarding_init" == "ok" ]]; then
         echo "vfio" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
         echo "vfio_iommu_type1" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
         echo "vfio_virqfd" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
-        echo "options vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
-        echo "vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
+        echo "options vfio_pci ids=$gpu_pci_id,$gpu_audio_pci_id" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
+        echo "vfio_pci ids=$gpu_pci_id,$gpu_audio_pci_id" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
         echo "vfio_pci" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
         echo "nvidia" | sudo tee -a /etc/initramfs-tools/modules > /dev/null
     fi
@@ -143,7 +185,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
     if  ! grep -q "vfio" /etc/modules; then
         echo "vfio" | sudo tee -a /etc/modules > /dev/null
         echo "vfio_iommu_type1" | sudo tee -a /etc/modules > /dev/null
-        echo "vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/modules > /dev/null
+        echo "vfio_pci ids=$gpu_pci_id,$gpu_audio_pci_id" | sudo tee -a /etc/modules > /dev/null
     fi
 
     # Nvidia Config
@@ -155,12 +197,12 @@ if [[ "$onboarding_init" == "ok" ]]; then
     # Modprobe VFIO
     touch /etc/modprobe.d/vfio_pci.conf
     if ! grep -q "options vfio_pci ids" /etc/modprobe.d/vfio_pci.conf ; then
-        echo "options vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/modprobe.d/vfio_pci.conf> /dev/null
+        echo "options vfio_pci ids=$gpu_pci_id,$gpu_audio_pci_id" | sudo tee -a /etc/modprobe.d/vfio_pci.conf> /dev/null
     fi
 
     touch /etc/modprobe.d/vfio.conf
     if ! grep -q "options vfio_pci ids" /etc/modprobe.d/vfio.conf ; then
-        echo "options vfio_pci ids=10de:2204,10de:1aef" | sudo tee -a /etc/modprobe.d/vfio.conf > /dev/null
+        echo "options vfio_pci ids=$gpu_pci_id,$gpu_audio_pci_id" | sudo tee -a /etc/modprobe.d/vfio.conf > /dev/null
     fi
 
     # Blacklist nouveau

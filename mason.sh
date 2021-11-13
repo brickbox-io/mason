@@ -141,7 +141,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
             for audio in "${!supported_gpus_audio[@]}"; do
                 gpu_audio_count=$(lspci -vnn | grep -q "${supported_gpus_audio[$gpu]}")
                 if [ "$gpu_audio_count" -gt 0 ]; then
-                    gpu_audio_name=$audio
+                    # gpu_audio_name=$audio
                     gpu_audio_pci_id=${supported_gpus_audio[$gpu]}
                     break
                 fi

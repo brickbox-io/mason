@@ -60,6 +60,7 @@ fi
 onboarding_endpoint='vm/host/onboarding'
 onboarding_pubkey_endpoint='vm/host/onboarding/pubkey'
 onboarding_sshport_endpoint='vm/host/onboarding/sshport'
+onboarding_gpu_endpoint='vm/host/onboarding/gpu'
 
 
 # ---------------------------------- bb_root --------------------------------- #
@@ -141,7 +142,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
     for gpu in "${!supported_gpus_vga[@]}"; do
         echo "$gpu"
         echo "${supported_gpus_vga[$gpu]}"
-        gpu_count=$(lspci -vnn | grep -c "${supported_gpus_vga[$gpu}]}")
+        gpu_count="$(lspci -vnn | grep -c "${supported_gpus_vga[$gpu}]}")"
         echo "GPU Count: $gpu_count"
         if [[ "$gpu_count" -gt 0 ]]; then
             gpu_name=$gpu
@@ -164,6 +165,11 @@ if [[ "$onboarding_init" == "ok" ]]; then
         echo "No supported GPU found."
         exit 1
     fi
+
+    #Register GPUs
+    lspci -vnn | grep -c "$gpu_pci_id" | while read -r gpu_result ; do
+        echo "location: ${gpu_result:0:2}"
+    done
 
     # IOMMU
     cpu_vendor=$(sudo cat /proc/cpuinfo | grep 'vendor' | uniq | cut -d':' -f2 | xargs)

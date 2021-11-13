@@ -132,7 +132,7 @@ if [[ "$onboarding_init" == "ok" ]]; then
     # Find GPU
     gpu_name=false
 
-    echo "$supported_gpus_vga[0]"
+    echo "${supported_gpus_vga[0]}"
 
     for gpu in "${!supported_gpus_vga[@]}"; do
         echo "$gpu"

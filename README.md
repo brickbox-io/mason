@@ -28,9 +28,9 @@ For quick installation the mason.sh script has been mapped to [mason.brickbox.io
 sudo wget -qO- mason.brickbox.io | bash /dev/stdin [arguments] [options]
 ```
 
-| Option Flag | Description | Example                          |
-|:-----------:|-------------|----------------------------------|
-|     -d      | Debug Flag  | sudo wget -qO- mason.brickbox.io |
+| Option Flag | Description | Example                             |
+|:-----------:|-------------|-------------------------------------|
+|     -d      | Debug Flag  | sudo wget -qO- mason.brickbox.io -d |
 
 ## Operations
 

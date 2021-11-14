@@ -1,22 +1,36 @@
-# Mason - brickbox.io
+<div align="center">
+
+<h1>Mason by brickbox.io</h1>
 
 [![Script Check](https://github.com/brickbox-io/mason/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/brickbox-io/mason/actions/workflows/shellcheck.yml)
 
+</div>
+
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [What is Mason?](#what-is-mason)
+- [Getting Started](#getting-started)
+- [Operations](#operations)
+- [Directory Structure](#directory-structure)
+
+## What is Mason?
+
 **Repository is intended for hosts, NOT end users. All hosts are manually vetted and approved by brickbox.io at this time.**
 
-## Installation
+Mason is an onboarding script to streamline the processes of connecting pre-qualified hosts to the [brickbox.io](brickbox.io) platform. The repository also contains additional onboarding scripts that are used as part of our virtualization platform.
 
-The following command will download and run the mason.py file.
+## Getting Started
+
+For quick installation the mason.sh script has been mapped to [mason.brickbox.io](mason.brickbox.io) and can be downloaded and ran with the following line:
 
 ```bash
 sudo wget -qO- mason.brickbox.io | bash /dev/stdin [arguments] [options]
 ```
 
-**ONLY FOR 3090s CURRENTLY**
-
-| Option Flag | Description |
-|-------------|-------------|
-| -d          | Debug Flag  |
+| Option Flag | Description | Example                          |
+|:-----------:|-------------|----------------------------------|
+|     -d      | Debug Flag  | sudo wget -qO- mason.brickbox.io |
 
 ## Operations
 
@@ -35,9 +49,11 @@ sudo wget -qO- mason.brickbox.io | bash /dev/stdin [arguments] [options]
 | GPU Pass - Blacklist nouveau | Add the nouveau driver to modprobe blacklist.                                                                            |
 | Assigned Prot                | Receive the assigned port from brickbox.io to be used for the SSH tunnel.                                                |
 
+## Directory Structure
 
-https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/
-
-https://askubuntu.com/questions/1166317/module-nvidia-is-in-use-but-there-are-no-processes-running-on-the-gpu
-
-https://linuxconfig.org/how-to-disable-blacklist-nouveau-nvidia-driver-on-ubuntu-20-04-focal-fossa-linux
+```default
+.
+├── .github  # CI/CD using GitHub Actions and other functions.
+├── mason.sh # Primary onboarding script.
+└── LICENSE  # Repository license.
+```

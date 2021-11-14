@@ -168,7 +168,13 @@ if [[ "$onboarding_init" == "ok" ]]; then
 
     #Register GPUs
     lspci -vnn | grep "$gpu_pci_id" | while read -r gpu_result ; do
-        echo "location: ${gpu_result:0:2}"
+        echo "location: ${gpu_result:0:7}"
+        bb_root_pubkey=$(curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
+                        -d "host_serial=$host_serial" \
+                        -d "gpu_model=$gpu_name" \
+                        -d "gpu_device=$gpu_pci_id" \
+                        -d "gpu_pcie=${gpu_result:0:7}" \
+                        -X POST "https://$url/$onboarding_gpu_endpoint/$host_serial/")
     done
 
     # IOMMU

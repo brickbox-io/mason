@@ -62,6 +62,9 @@ onboarding_pubkey_endpoint='vm/host/onboarding/pubkey'
 onboarding_sshport_endpoint='vm/host/onboarding/sshport'
 onboarding_gpu_endpoint='vm/host/onboarding/gpu'
 
+# ------------------------------- Housekeeping ------------------------------- #
+sudo apt-get update && sudo apt-get upgrade -y
+
 
 # ---------------------------------- bb_root --------------------------------- #
 if [[ ! $(id -u bb_root > /dev/null 2>&1) ]]; then

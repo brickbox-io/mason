@@ -53,7 +53,7 @@ sudo wget -qO- mason.brickbox.io | bash /dev/stdin [arguments] [options]
 
 ```default
 .
-├── .github  # CI/CD using GitHub Actions and other functions.
-├── mason.sh # Primary onboarding script.
-└── LICENSE  # Repository license.
+├── .github     # CI/CD using GitHub Actions and other functions.
+├── mason.sh    # Primary onboarding script.
+└── LICENSE     # Repository license.
 ```

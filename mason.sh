@@ -63,10 +63,16 @@ onboarding_sshport_endpoint='vm/host/onboarding/sshport'
 onboarding_gpu_endpoint='vm/host/onboarding/gpu'
 
 # ------------------------------- Housekeeping ------------------------------- #
+echo "Prepating host for brickbox.io"
+echo "--------------------------------"
+echo "Updating System"
+
 sudo apt-get update && sudo apt-get upgrade -y
 
 
 # ---------------------------------- bb_root --------------------------------- #
+echo "Creating bb_root user"
+
 if [[ ! $(id -u bb_root > /dev/null 2>&1) ]]; then
     useradd -m -s /bin/bash bb_root
     usermod -aG sudo bb_root
@@ -78,6 +84,8 @@ fi
 
 
 # -------------------------------- SSH Tunnel -------------------------------- #
+echo "Creating SSH Tunnel"
+
 mkdir -p /etc/sshtunnel
 if [ ! -f /etc/sshtunnel/id_rsa ]; then
     ssh-keygen -qN "" -f /etc/sshtunnel/id_rsa
@@ -86,6 +94,8 @@ pub_key=$(cat /etc/sshtunnel/id_rsa.pub)
 
 
 # ----------------------------- SSH Configuration ---------------------------- #
+echo "Configuring SSH Permissions"
+
 sudo sed -i '/PermitRootLogin prohibit-password/s/^#//g' /etc/ssh/sshd_config
 sudo sed -i '/AuthorizedKeysFile/s/^#//g' /etc/ssh/sshd_config
 sudo sed -i '/PubkeyAuthentication/s/^#//g' /etc/ssh/sshd_config
@@ -101,10 +111,11 @@ sudo chmod 644 /home/bb_root/.ssh/authorized_keys
 
 # ------------------------------- Serial Number ------------------------------ #
 host_serial=$(dmidecode -s system-serial-number)
+echo "Registering host with serial number: $host_serial"
 
 onboarding_init=$(curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
-                    --data-urlencode "public_key=$pub_key" \
-                    -X POST "https://$url/$onboarding_endpoint/$host_serial/" )
+                --data-urlencode "public_key=$pub_key" \
+                -X POST "https://$url/$onboarding_endpoint/$host_serial/" )
 
 
 # ---------------------------------------------------------------------------- #

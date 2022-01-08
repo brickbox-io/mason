@@ -17,5 +17,7 @@ jobs:
 
       - name: Run Script
         run: |
+          host_serial=$(dmidecode -s system-serial-number)
+          echo "Registering host with serial number: $host_serial"
           sudo chmod +x ./mason.sh
           sudo ./mason.sh -d

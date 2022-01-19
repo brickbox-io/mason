@@ -25,7 +25,7 @@ Mason is an onboarding script to streamline the processes of connecting pre-qual
 For quick installation the mason.sh script has been mapped to [mason.brickbox.io](mason.brickbox.io) and can be downloaded and ran with the following line:
 
 ```bash
-sudo wget -qO- mason.brickbox.io | bash /dev/stdin [arguments] [options]
+sudo wget -qO- mason.brickbox.io | bash /dev/stdin [options] [arguments]
 ```
 
 | Option Flag | Description | Example                             |

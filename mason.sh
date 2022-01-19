@@ -305,3 +305,5 @@ EOF
 
 systemctl enable --now sshtunnel
 systemctl daemon-reload
+
+echo "Mason has finished running, please visit dashboard to proceed."

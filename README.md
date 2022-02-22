@@ -30,7 +30,7 @@ sudo wget -qO- mason.brickbox.io | bash /dev/stdin [options] [arguments]
 
 | Option Flag | Description | Example                             |
 |:-----------:|-------------|-------------------------------------|
-|     -d      | Debug Flag  | sudo wget -qO- mason.brickbox.io \| bash /dev/stdin-d |
+|     -d      | Debug Flag  | sudo wget -qO- mason.brickbox.io \| bash /dev/stdin -d |
 
 ## Operations
 
